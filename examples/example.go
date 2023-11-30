@@ -3,16 +3,24 @@ package main
 import (
 	"fmt"
 
-	"github.com/CalypsoSys/godoublemetaphone"
+	"github.com/CalypsoSys/godoublemetaphone/pkg/godoublemetaphone"
 )
 
+func safeString(str *string) string {
+	if str != nil {
+		return *str
+	}
+
+	return "<nil>"
+}
+
 func main() {
-	primary, secondary := godoublemetaphone.NewDoubleMetaphone("SMITH")
-	fmt.Printf("Metaphones for SMITH: first: %v, second: %v\n", primary, secondary)
+	dm := godoublemetaphone.NewDoubleMetaphone("SMITH")
+	fmt.Printf("Metaphones for SMITH: first: %s, second: %v\n", dm.PrimaryKey(), safeString(dm.AlternateKey()))
 
-	primary, secondary = godoublemetaphone.NewDoubleMetaphone("SMYTHE")
-	fmt.Printf("Metaphones for SMYTHE: first: %v, second: %v\n", primary, secondary)
+	dm = godoublemetaphone.NewDoubleMetaphone("SMYTHE")
+	fmt.Printf("Metaphones for SMYTHE: first: %s, second: %v\n", dm.PrimaryKey(), safeString(dm.AlternateKey()))
 
-	primary, secondary = godoublemetaphone.NewDoubleMetaphone("SCHMIDT")
-	fmt.Printf("Metaphones for SCHMIDT: first: %v, second: %v\n", primary, secondary)
+	dm = godoublemetaphone.NewDoubleMetaphone("SCHMIDT")
+	fmt.Printf("Metaphones for SCHMIDT: first: %s, second: %v\n", dm.PrimaryKey(), safeString(dm.AlternateKey()))
 }

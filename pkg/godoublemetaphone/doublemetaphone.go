@@ -68,6 +68,8 @@ func newDoubleMetaphone(word string) *doubleMetaphone {
 		alternateKey: []rune{},
 	}
 
+	dm.computeKeys(word)
+
 	return dm
 }
 
@@ -137,7 +139,7 @@ func (dm *doubleMetaphone) computeKeys(word string) {
 	dm.last = dm.length - 1
 
 	//Padd with four spaces, so word can be over-indexed without fear of exception
-	dm.word = fmt.Sprintf("     %s", dm.word)
+	dm.word = fmt.Sprintf("%s%s", dm.word, strings.Repeat(" ", 5))
 
 	//Convert to upper case, since metaphone is not case sensitive
 	dm.word = strings.ToUpper(dm.word)

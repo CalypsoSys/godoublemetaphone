@@ -17,6 +17,10 @@ package godoublemetaphone
  * http;//www.nullpointer.net/anelson/
  */
 
+const (
+	METAPHONE_KEY_LENGTH = 6 //The length of the metaphone keys produced.  4 is sweet spot
+)
+
 type ShortDoubleMetaphone interface {
 	PrimaryShortKey() uint16
 	AlternateShortKey() uint16
@@ -74,7 +78,7 @@ type shortDoubleMetaphone struct {
 /// <param name="word">Word for which to compute metaphone keys</param>
 func NewShortDoubleMetaphone(word string) ShortDoubleMetaphone {
 	sdm := &shortDoubleMetaphone{
-		dm: newDoubleMetaphone(word),
+		dm: newDoubleMetaphone(word, METAPHONE_KEY_LENGTH),
 	}
 
 	sdm.primaryShortKey = sdm.metaphoneKeyToShort(sdm.dm.PrimaryKey())

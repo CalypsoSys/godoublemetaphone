@@ -26,6 +26,20 @@ func stringPtr(str string) *string {
 	return &str
 }
 
+func overLap(set1 []string, set2 []string) string {
+	for _, str1 := range set1 {
+		if str1 != "" {
+			for _, str2 := range set2 {
+				if str1 == str2 {
+					return str1
+				}
+			}
+		}
+	}
+
+	return ""
+}
+
 func TestSingleResult(t *testing.T) {
 	tests := []struct {
 		name          string
@@ -94,8 +108,8 @@ func TestGeneralWordList(t *testing.T) {
 		{
 			name:          "test cambrillo",
 			arg:           "cambrillo",
-			wantPrimary:   "KMPR",
-			wantAlternate: nil,
+			wantPrimary:   "KMPRL",
+			wantAlternate: stringPtr("KMPR"),
 		},
 		{
 			name:          "test otto",
@@ -361,40 +375,39 @@ func TestSimilarNames1(t *testing.T) {
 	}
 }
 
-/* TODO
 func TestSimilarNames2(t *testing.T) {
 	tests := []struct {
-		name        string
-		arg         string
-		want        string
-		wantPrimary string
+		name string
+		arg1 string
+		arg2 string
+		want string
 	}{
 		{
-			name:        "test Jablonski",
-			arg:         "Jablonski",
-			want:        "Yablonsky",
-			wantPrimary: "APLNSK",
+			name: "test Jablonski",
+			arg1: "Jablonski",
+			arg2: "Yablonsky",
+			want: "APLNSK",
 		},
 		{
-			name:        "test Smith",
-			arg:         "Smith",
-			want:        "Schmidt",
-			wantPrimary: "XMT",
+			name: "test Smith",
+			arg1: "Smith",
+			arg2: "Schmidt",
+			want: "XMT",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := NewDoubleMetaphone(tt.arg)
-			want := NewDoubleMetaphone(tt.want)
-			if got.PrimaryKey() != want.PrimaryKey() || !compareStringPointers(got.AlternateKey(), want.AlternateKey()) || got.PrimaryKey() != tt.wantPrimary {
-				t.Errorf("TestSimilarNames2 = %s %s, want %s %s", got.PrimaryKey(), safeString(got.AlternateKey()), want.PrimaryKey(), safeString(want.AlternateKey()))
+			got := NewDoubleMetaphone(tt.arg1)
+			want := NewDoubleMetaphone(tt.arg2)
+			set1 := []string{got.PrimaryKey(), safeString(got.AlternateKey())}
+			set2 := []string{want.PrimaryKey(), safeString(want.AlternateKey())}
+			if overLap(set1, set2) != tt.want {
+				t.Errorf("TestSimilarNames2 = arg1 %s %s arg2 %s %s, want %s", got.PrimaryKey(), safeString(got.AlternateKey()), want.PrimaryKey(), safeString(want.AlternateKey()), tt.want)
 			}
 		})
 	}
 }
-*/
 
-/*
 func TestNonEnglishUnicode(t *testing.T) {
 	tests := []struct {
 		name          string
@@ -417,7 +430,6 @@ func TestNonEnglishUnicode(t *testing.T) {
 		})
 	}
 }
-*/
 
 func TestVariousGerman(t *testing.T) {
 	tests := []struct {
@@ -545,10 +557,10 @@ func TestVariousSpanish(t *testing.T) {
 			wantAlternate: stringPtr("KKS"),
 		},
 		{
-			name: "test San Jacinto",
-			arg:  "San Jacinto",
-			//wantPrimary:   "SNHSNT",
-			wantPrimary:   "SNHS",
+			name:        "test San Jacinto",
+			arg:         "San Jacinto",
+			wantPrimary: "SNHSNT",
+			//wantPrimary:   "SNHS",
 			wantAlternate: nil,
 		},
 	}
@@ -656,19 +668,19 @@ func TestVariousDutch(t *testing.T) {
 			wantAlternate: nil,
 		},
 		{
-			name:          "test schermerhorn",
-			arg:           "schermerhorn",
-			wantPrimary:   "XRMR",
-			wantAlternate: stringPtr("SKRM"),
-			//wantPrimary:   "XRMRRN",
-			//wantAlternate: stringPtr("SKRMRRN"),
+			name: "test schermerhorn",
+			arg:  "schermerhorn",
+			//wantPrimary:   "XRMR",
+			//wantAlternate: stringPtr("SKRM"),
+			wantPrimary:   "XRMRRN",
+			wantAlternate: stringPtr("SKRMRRN"),
 		},
 		{
-			name:          "test schenker",
-			arg:           "schenker",
-			wantPrimary:   "XNKR",
-			wantAlternate: stringPtr("SKNK"),
-			//wantAlternate: stringPtr("SKNKR"),
+			name:        "test schenker",
+			arg:         "schenker",
+			wantPrimary: "XNKR",
+			//wantAlternate: stringPtr("SKNK"),
+			wantAlternate: stringPtr("SKNKR"),
 		},
 	}
 	for _, tt := range tests {
@@ -730,17 +742,17 @@ func TestChWords(t *testing.T) {
 			wantAlternate: nil,
 		},
 		{
-			name:        "test orchestra",
-			arg:         "orchestra",
-			wantPrimary: "ARKS",
-			//wantPrimary:   "ARKSTR",
+			name: "test orchestra",
+			arg:  "orchestra",
+			//wantPrimary: "ARKS",
+			wantPrimary:   "ARKSTR",
 			wantAlternate: nil,
 		},
 		{
-			name:        "test architect",
-			arg:         "architect",
-			wantPrimary: "ARKT",
-			//wantPrimary:   "ARKTKT",
+			name: "test architect",
+			arg:  "architect",
+			//wantPrimary: "ARKT",
+			wantPrimary:   "ARKTKT",
 			wantAlternate: nil,
 		},
 		{
@@ -767,10 +779,10 @@ func TestCcWords(t *testing.T) {
 		wantAlternate *string
 	}{
 		{
-			name:        "test accident",
-			arg:         "accident",
-			wantPrimary: "AKST",
-			//wantPrimary:   "AKSTNT",
+			name: "test accident",
+			arg:  "accident",
+			//wantPrimary: "AKST",
+			wantPrimary:   "AKSTNT",
 			wantAlternate: nil,
 		},
 		{
@@ -809,10 +821,10 @@ func TestMcWords(t *testing.T) {
 			wantAlternate: nil,
 		},
 		{
-			name:        "test mac gregor",
-			arg:         "mac gregor",
-			wantPrimary: "MKRK",
-			//wantPrimary:   "MKRKR",
+			name: "test mac gregor",
+			arg:  "mac gregor",
+			//wantPrimary: "MKRK",
+			wantPrimary:   "MKRKR",
 			wantAlternate: nil,
 		},
 		{

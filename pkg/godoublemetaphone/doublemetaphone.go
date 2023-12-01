@@ -2,6 +2,7 @@ package godoublemetaphone
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -20,10 +21,6 @@ import (
  *
  */
 
-const (
-	METAPHONE_KEY_LENGTH = 4 //The length of the metaphone keys produced.  4 is sweet spot
-)
-
 type DoubleMetaphone interface {
 	PrimaryKey() string
 	AlternateKey() *string
@@ -31,6 +28,8 @@ type DoubleMetaphone interface {
 }
 
 type doubleMetaphone struct {
+	maxKeyLength int
+
 	///StringBuilders used to construct the keys
 	primaryKey   []rune
 	alternateKey []rune
@@ -56,14 +55,16 @@ type doubleMetaphone struct {
 }
 
 func NewDoubleMetaphone(word string) DoubleMetaphone {
-	return newDoubleMetaphone(word)
+	return newDoubleMetaphone(word, math.MaxInt64)
 }
 
-func newDoubleMetaphone(word string) *doubleMetaphone {
+func NewDoubleMetaphoneLimit(word string, maxKeyLength int) DoubleMetaphone {
+	return newDoubleMetaphone(word, maxKeyLength)
+}
+
+func newDoubleMetaphone(word string, maxKeyLength int) *doubleMetaphone {
 	dm := &doubleMetaphone{
-		//Leave room at the end for writing a bit beyond the length; keys are chopped at the end anyway
-		//primaryKey:   [METAPHONE_KEY_LENGTH + 2]rune{},
-		//alternateKey: [METAPHONE_KEY_LENGTH + 2]rune{},
+		maxKeyLength: maxKeyLength,
 		primaryKey:   []rune{},
 		alternateKey: []rune{},
 	}
@@ -170,7 +171,7 @@ func (dm *doubleMetaphone) buildMetaphoneKeys() {
 	}
 
 	///////////main loop//////////////////////////
-	for (dm.primaryKeyLength < METAPHONE_KEY_LENGTH) || (dm.alternateKeyLength < METAPHONE_KEY_LENGTH) {
+	for (dm.primaryKeyLength < dm.maxKeyLength) || (dm.alternateKeyLength < dm.maxKeyLength) {
 		if current >= dm.length {
 			break
 		}
@@ -844,12 +845,12 @@ func (dm *doubleMetaphone) buildMetaphoneKeys() {
 	}
 
 	//Finally, chop off the keys at the proscribed length
-	if dm.primaryKeyLength > METAPHONE_KEY_LENGTH {
-		dm.primaryKey = dm.primaryKey[:METAPHONE_KEY_LENGTH]
+	if dm.primaryKeyLength > dm.maxKeyLength {
+		dm.primaryKey = dm.primaryKey[:dm.maxKeyLength]
 	}
 
-	if dm.alternateKeyLength > METAPHONE_KEY_LENGTH {
-		dm.alternateKey = dm.alternateKey[:METAPHONE_KEY_LENGTH]
+	if dm.alternateKeyLength > dm.maxKeyLength {
+		dm.alternateKey = dm.alternateKey[:dm.maxKeyLength]
 	}
 
 	dm.primaryKeyString = string(dm.primaryKey)

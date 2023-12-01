@@ -39,7 +39,6 @@ func TestSingleResult(t *testing.T) {
 			wantPrimary:   "APR",
 			wantAlternate: nil,
 		},
-		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -63,7 +62,6 @@ func TestDoubleResult(t *testing.T) {
 			wantPrimary:   "RXRT",
 			wantAlternate: stringPtr("RKRT"),
 		},
-		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -285,12 +283,44 @@ func TestGeneralWordList(t *testing.T) {
 			wantPrimary:   "0MPL",
 			wantAlternate: stringPtr("TMPL"),
 		},
-		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := NewDoubleMetaphone(tt.arg); got.PrimaryKey() != tt.wantPrimary || !compareStringPointers(got.AlternateKey(), tt.wantAlternate) {
 				t.Errorf("TestGeneralWordList = %s %s, want %s %s", got.PrimaryKey(), safeString(got.AlternateKey()), tt.wantPrimary, safeString(tt.wantAlternate))
+			}
+		})
+	}
+}
+
+func TestHomophones(t *testing.T) {
+	tests := []struct {
+		name string
+		arg  string
+		want string
+	}{
+		{
+			name: "test tolled",
+			arg:  "tolled",
+			want: "told",
+		},
+		{
+			name: "test katherine",
+			arg:  "katherine",
+			want: "catherine",
+		},
+		{
+			name: "test brian",
+			arg:  "brian",
+			want: "bryan",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := NewDoubleMetaphone(tt.arg)
+			want := NewDoubleMetaphone(tt.want)
+			if got.PrimaryKey() != want.PrimaryKey() || !compareStringPointers(got.AlternateKey(), want.AlternateKey()) {
+				t.Errorf("TestHomophones = %s %s, want %s %s", got.PrimaryKey(), safeString(got.AlternateKey()), want.PrimaryKey(), safeString(want.AlternateKey()))
 			}
 		})
 	}
